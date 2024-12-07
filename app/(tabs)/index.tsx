@@ -1,74 +1,137 @@
-import { Image, StyleSheet, Platform } from 'react-native';
+import {
+  StyleSheet,
+  Platform,
+  SafeAreaView,
+  useColorScheme,
+  View,
+  Text,
+  TextInput,
+  KeyboardAvoidingView,
+  FlatList,
+  ScrollView,
+  TouchableOpacity,
+} from "react-native";
 
-import { HelloWave } from '@/components/HelloWave';
-import ParallaxScrollView from '@/components/ParallaxScrollView';
-import { ThemedText } from '@/components/ThemedText';
-import { ThemedView } from '@/components/ThemedView';
+import { Ionicons } from "@expo/vector-icons";
+import ChatContainer from "@/components/Chats/ChatContainer";
+import FilterTabContainer from "@/components/Chats/FilterTabContainer";
+import { Link, useNavigation } from "expo-router";
 
 export default function HomeScreen() {
-  return (
-    <ParallaxScrollView
-      headerBackgroundColor={{ light: '#A1CEDC', dark: '#1D3D47' }}
-      headerImage={
-        <Image
-          source={require('@/assets/images/partial-react-logo.png')}
-          style={styles.reactLogo}
+  const colorScheme = useColorScheme();
+
+  // Define theme colors
+  const colors = {
+    light: {
+      background: "#ffffff",
+      primaryText: "#000000",
+      secondaryText: "#666666",
+      inputBackground: "#f0f0f0",
+      inputText: "#000000",
+      icon: "#666666",
+    },
+    dark: {
+      background: "#0a0a0a",
+      primaryText: "#ffffff",
+      secondaryText: "#979797",
+      inputBackground: "#222222",
+      inputText: "#ffffff",
+      icon: "#999999",
+    },
+  };
+
+  const theme = colors[colorScheme];
+
+  const chats = [
+    {
+      id: 1,
+      name: "Thaththi ❤️ 👑",
+      message: "https://www.facebook.com/share/v/...",
+      time: "11:51 AM",
+      unreadCount: 1,
+    },
+    {
+      id: 2,
+      name: "Amma 👩‍👧‍👦",
+      message: "Dinner is ready!",
+      time: "11:45 AM",
+      unreadCount: 0,
+    },
+  ];
+
+  const tabs = ["All", "Unread", "Favorites", "Groups", "+"];
+
+  const handleTabPress = (tab) => {
+    console.log(`${tab} pressed`);
+  };
+
+  const renderHeader = () => (
+    <View style={{ marginTop: 10, marginBottom: 15 }}>
+      <Text
+        style={{
+          color: theme.primaryText,
+          fontWeight: "bold",
+          fontSize: 40,
+        }}
+      >
+        Chats
+      </Text>
+      <KeyboardAvoidingView
+        style={{
+          flexDirection: "row",
+          backgroundColor: theme.inputBackground,
+          alignItems: "center",
+          padding: 8,
+          borderRadius: 10,
+          gap: 5,
+          marginTop: 10,
+        }}
+      >
+        <Ionicons name="search" size={20} color={theme.icon} />
+        <TextInput
+          placeholder="Search"
+          placeholderTextColor={theme.secondaryText}
+          style={{ fontSize: 20, flex: 1, color: theme.inputText }}
         />
-      }>
-      <ThemedView style={styles.titleContainer}>
-        <ThemedText type="title">Welcome!</ThemedText>
-        <HelloWave />
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 1: Try it</ThemedText>
-        <ThemedText>
-          Edit <ThemedText type="defaultSemiBold">app/(tabs)/index.tsx</ThemedText> to see changes.
-          Press{' '}
-          <ThemedText type="defaultSemiBold">
-            {Platform.select({
-              ios: 'cmd + d',
-              android: 'cmd + m',
-              web: 'F12'
-            })}
-          </ThemedText>{' '}
-          to open developer tools.
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 2: Explore</ThemedText>
-        <ThemedText>
-          Tap the Explore tab to learn more about what's included in this starter app.
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 3: Get a fresh start</ThemedText>
-        <ThemedText>
-          When you're ready, run{' '}
-          <ThemedText type="defaultSemiBold">npm run reset-project</ThemedText> to get a fresh{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> directory. This will move the current{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> to{' '}
-          <ThemedText type="defaultSemiBold">app-example</ThemedText>.
-        </ThemedText>
-      </ThemedView>
-    </ParallaxScrollView>
+      </KeyboardAvoidingView>
+      <FilterTabContainer />
+    </View>
+  );
+
+  const renderItem = ({ item }) => (
+      <ChatContainer chats={[item]} />
+  );
+
+  return (
+    <SafeAreaView style={{ backgroundColor: theme.background, flex: 1 }}>
+      <FlatList
+        data={chats}
+        renderItem={renderItem}
+        keyExtractor={(item) => item.id}
+        ListHeaderComponent={renderHeader}
+        contentContainerStyle={{
+          paddingBottom: 20, // Add some padding for the end of the list
+          width: "95%",
+          alignSelf: "center",
+        }}
+        ItemSeparatorComponent={() => (
+          <View
+            style={{
+              height: 0.6,
+              width: "83%",
+              alignSelf: "flex-end",
+              backgroundColor: colorScheme === "dark" ? "#191919" : "#e8e8e8",
+            }}
+          />
+        )}
+      />
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
-  titleContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-  },
-  stepContainer: {
-    gap: 8,
-    marginBottom: 8,
-  },
-  reactLogo: {
-    height: 178,
-    width: 290,
-    bottom: 0,
-    left: 0,
-    position: 'absolute',
+  container: {
+    flex: 1,
+    alignItems: "center",
   },
 });
